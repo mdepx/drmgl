@@ -286,12 +286,10 @@ match_config_to_visual(EGLDisplay egl_display, EGLint visual_id,
 static int
 init_gl(void)
 {
-	GLuint vertex_shader, fragment_shader;
 	EGLint major, minor, n;
 	EGLConfig *configs;
 	int config_index;
 	int visual_id;
-	GLint ret;
 	int count;
 
 	static const EGLint context_attribs[] = {
@@ -393,10 +391,7 @@ draw(uint32_t i)
 static void
 drm_fb_destroy_callback(struct gbm_bo *bo, void *data)
 {
-	struct gbm_device *gbm;
 	struct drm_fb *fb;
-
-	gbm =  gbm_bo_get_device(bo);
 
 	fb = data;
 	if (fb->fb_id)
