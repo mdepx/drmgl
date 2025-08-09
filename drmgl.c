@@ -43,8 +43,6 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
 
-static unsigned char ttf_buffer[1 << 21];
-static unsigned char temp_bitmap[1024 * 1024];
 static stbtt_bakedchar cdata[96]; // ASCII 32..126 is 95 glyphs
 static GLuint ftex;
 
@@ -78,17 +76,28 @@ struct drm_fb {
 static void
 my_stbtt_initfont(void)
 {
+	uint8_t *temp_bitmap;
+	uint8_t *ttf_buffer;
+	int bufsize;
 
-	fread(ttf_buffer, 1, 1 << 21, fopen("times.ttf", "rb"));
-	stbtt_BakeFontBitmap(ttf_buffer,0, 96.0, temp_bitmap,1024,1024,
-	    32,96, cdata);
-	// can free ttf_buffer at this point
+	bufsize = (1 << 21);
+
+	ttf_buffer = malloc(bufsize);
+	temp_bitmap = malloc(1024 * 1024);
+
+	fread(ttf_buffer, 1, bufsize, fopen("times.ttf", "rb"));
+	stbtt_BakeFontBitmap(ttf_buffer, 0, 96.0, temp_bitmap, 1024, 1024,
+	    32, 96, cdata);
+
+	free(ttf_buffer);
+
 	glGenTextures(1, &ftex);
 	glBindTexture(GL_TEXTURE_2D, ftex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 1024,1024,
-	    0, GL_ALPHA, GL_UNSIGNED_BYTE, temp_bitmap);
-	// can free temp_bitmap at this point
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 1024, 1024, 0, GL_ALPHA,
+	    GL_UNSIGNED_BYTE, temp_bitmap);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	free(temp_bitmap);
 }
 
 static void
