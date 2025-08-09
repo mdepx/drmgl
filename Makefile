@@ -1,4 +1,5 @@
 CFLAGS  = -I/usr/local/include/libdrm -I/usr/local/include
+CFLAGS += -Wall -Wformat
 LDFLAGS = -L/usr/local/lib
 
 LIBS = -lEGL -lgbm -ldrm -lm -lOpenGL
